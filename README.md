@@ -7,7 +7,7 @@ This repository contains the code that implements the FREM clustering algorithm 
 The clustering algorithm described in Section 2 is implemented as a function in `frem.py`. It can be called in the following way
 
 ```python
-theta_estimated, cond_prob = FREM(K, dataset)
+theta_estimated, cond_prob, delta_mu, delta_sigma = FREM(K, dataset)
 ```
 where `K` is the number of clusters.
 
