@@ -13,7 +13,7 @@ where `K` is the number of clusters.
 
 ## Datasets
 
-To download the datasets used to compare the different clustering algorithms in the notebooks:
+You can download the datasets used to compare the different clustering algorithms in the notebooks:
 
 - MNIST (https://www.kaggle.com/oddrationale/mnist-in-csv)
 - smallNORB (https://cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
