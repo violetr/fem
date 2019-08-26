@@ -27,7 +27,7 @@ The notebooks
 - experiments-NORBand20newsgroup.ipynb
 - experiments-simulations.ipynb
 
-contain the experiments and comparisons described in Section 3 of the the paper.
+contain the experiments and comparisons described in the Section 3 of the paper.
 
 ## Copyright
 
