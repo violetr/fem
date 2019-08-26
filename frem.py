@@ -48,7 +48,7 @@ def compute_condition_prob_matrix(X, theta_old):
 
     return cond_prob_matrix
 
-def CG_EM(K, X, max_iter, rand_initialization, version, max_iter_fp):
+def FREM(K, X, max_iter = 200, rand_initialization = False, version = 1, max_iter_fp = 20):
     # Computes the parameters of the model
     # theta = (alpha, mu, sigma, tau)
     #

@@ -1,3 +1,6 @@
+# Copyright (c) 2017 Andrea Palazzi
+# https://github.com/ndrplz/small_norb
+
 import struct
 import numpy as np
 import matplotlib.pyplot as plt
