@@ -1,6 +1,6 @@
 # A flexible EM-like clustering algorithm for noisy data
 
-This repository contains the code that implements the FREM clustering algorithm corresponding to the paper https://arxiv.org/pdf/1907.01660.pdf. This algorithm follows a EM scheme focused on robustess to noise.
+This repository contains the code that implements the FREM clustering algorithm corresponding to the paper https://arxiv.org/pdf/1907.01660.pdf. This algorithm follows a EM scheme focused on robustness to noise.
 
 ## Algorithm
 
