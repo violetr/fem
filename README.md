@@ -41,7 +41,7 @@ contain the experiments and comparisons described in the Section 3 of the paper.
 
 Authors
 
-- Violeta Roizman (violeta.roizman@l2s.centralesupelec.fr)
+- Violeta Roizman (violeta.roizman@centralesupelec.fr)
 - Matthieu Jonckheere
 - Frédéric Pascal
 
