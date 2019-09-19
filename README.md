@@ -21,7 +21,7 @@ External libraries required to run it:
 
 ## Datasets
 
-You can download the datasets used to compare the different clustering algorithms in the notebooks:
+You can download the datasets used to compare the different clustering algorithms:
 
 - MNIST (https://www.kaggle.com/oddrationale/mnist-in-csv)
 - smallNORB (https://cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
