@@ -21,7 +21,7 @@ External libraries required to run it:
 
 ## Datasets
 
-You can download the datasets used to compare the different clustering algorithms in the notebooks:
+You can download the datasets used to compare the different clustering algorithms:
 
 - MNIST (https://www.kaggle.com/oddrationale/mnist-in-csv)
 - smallNORB (https://cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
@@ -36,6 +36,8 @@ The notebooks
 - experiments-simulations.ipynb
 
 contain the experiments and comparisons described in the Section 3 of the paper. `plotnine` and `matplotlib` are required for the plots.
+
+We run the t-EM algorithm implemented by the function `EmSkew` from the R library `EMMMIXskew`. 
 
 ## Copyright
 
