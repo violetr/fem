@@ -155,7 +155,8 @@ def FREM(K, X, max_iter = 200, rand_initialization = False, version = 1, max_ite
                 mu_fixed_point_new = np.sum(np.multiply(X, Ck[:, np.newaxis]), 0)
                 Sigma_sum = np.zeros((p, p))
                 for i in range(n):
-                    if version == 2 or version == 4:
+                    
+                    if version == 2 or version == 4: # if usig new estim, update denominator
                         sq_maha = ((X[i,:]-mu_fixed_point_new).T @ inv_Sigma_fixed_point @ (X[i,:]-mu_fixed_point_new))
                         tau_ite[i] = sq_maha / p
                         tau_ite_sr[i] = (sq_maha**(0.5))/p
@@ -209,7 +210,7 @@ def FREM(K, X, max_iter = 200, rand_initialization = False, version = 1, max_ite
         theta_new = pd.Series([alpha_new, mu_new, Sigma_new, tau_new], index=['alpha', 'mu', 'Sigma', 'tau'])
 
         # Check convergence:
-        if ite > 5:
+        if ite > 5:  # tol from fixed point should be bigger than general tolerance rate 
             convergence = True
             k = 0
             while convergence and k<K:
