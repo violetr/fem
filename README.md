@@ -4,10 +4,12 @@ This repository contains the code that implements the F-EM clustering algorithm 
 
 ## Algorithm
 
-The clustering algorithm described in Section 2 is implemented as a function in `fem.py`. It can be called in the following way
+The clustering algorithm described in Section 2 is implemented as a class in `fem.py`. It can be called in the following way
 
 ```python
-theta_estimated, cond_prob, delta_mu, delta_sigma = FEM(K, dataset)
+fem = FEM(K)
+fem.fit(dataset)
+fem.labels_
 ```
 where `K` is the number of clusters.
 
