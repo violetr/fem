@@ -1,13 +1,13 @@
-# A flexible EM-like clustering algorithm for noisy data
+# A flexible EM-like Clustering Algorithm for High-Dimensional Noisy Data
 
-This repository contains the code that implements the FREM clustering algorithm corresponding to https://arxiv.org/pdf/1907.01660.pdf. This algorithm follows a EM scheme focused on robustness to noise.
+This repository contains the code that implements the F-EM clustering algorithm corresponding to https://arxiv.org/pdf/1907.01660.pdf. This algorithm follows a EM scheme focused on robustness to noise.
 
 ## Algorithm
 
-The clustering algorithm described in Section 2 is implemented as a function in `frem.py`. It can be called in the following way
+The clustering algorithm described in Section 2 is implemented as a function in `fem.py`. It can be called in the following way
 
 ```python
-theta_estimated, cond_prob, delta_mu, delta_sigma = FREM(K, dataset)
+theta_estimated, cond_prob, delta_mu, delta_sigma = FEM(K, dataset)
 ```
 where `K` is the number of clusters.
 
