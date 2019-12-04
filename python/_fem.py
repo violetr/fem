@@ -5,6 +5,7 @@ import pandas as pd
 # MATH and STATS:
 import math
 from scipy.stats import multivariate_normal
+from scipy.stats._multivariate import _PSD  
 
 # for initialization of cluster's centers:
 from sklearn.cluster import KMeans
@@ -121,21 +122,21 @@ class FEM():
         K = len(self.alpha_)
         
         cond_prob_matrix = np.zeros((n,K))
-
-        for i in range(n):
-
-            for k in range(K):
-
-                normal = multivariate_normal(mean = self.mu_[k], 
-                                             cov  = self.tau_[i][k] * self.Sigma_[k])
-                density = normal.pdf(X[i,:])
-
-                cond_prob_matrix[i, k] = self.alpha_[k] * density
-
-            if np.sum(cond_prob_matrix[i,:]) == 0: # if point is likely outlier
-                cond_prob_matrix[i, :] = self.alpha_ # "prior"
-
-            cond_prob_matrix[i, :] /= (np.sum(cond_prob_matrix[i,:]))
+    
+        for k in range(K):
+            
+            psd = _PSD(self.Sigma_[k])
+            prec_U, logdet = psd.U, psd.log_pdet
+            diff = X - self.mu_[k]
+            sq_maha = np.sum(np.square(np.dot(diff, prec_U)), axis=-1)/ self.tau_[:, k]
+            logdensity = -0.5 * (p * np.log(2 * np.pi) + p * np.log(self.tau_[:, k]) + logdet + sq_maha)            
+            cond_prob_matrix[:, k] = np.exp(logdensity)  * self.alpha_[k]            
+        
+        sum_row = np.sum(cond_prob_matrix, axis = 1) 
+        bool_sum_zero = (sum_row == 0)
+        
+        cond_prob_matrix[bool_sum_zero, :] = self.alpha_      
+        cond_prob_matrix /= cond_prob_matrix.sum(axis=1)[:,np.newaxis]
 
         return cond_prob_matrix
     
@@ -214,25 +215,25 @@ class FEM():
                     tau_ite_sr = np.where(tau_ite_sr<10**(-8) , 10**(-8),
                                           np.where(tau_ite_sr>10**(8), 10**(8), tau_ite_sr))
                     
-                if self.version == 1:
+                if self.version==1:
                     
                     diff = X - mu_fixed_point
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
                     
-                if self.version == 2:
+                if self.version==2:
                     
                     diff = X - mu_fixed_point_new
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
                     
-                if self.version == 3:
+                if self.version==3:
                     
                     diff = X - mu_fixed_point
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
 
-                if self.version == 4: 
+                if self.version==4: 
                     
                     diff = X - mu_fixed_point_new
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
@@ -265,7 +266,7 @@ class FEM():
         ----------
         X: array-like, shape (n, p)
             data 
-            
+    
         Returns
         ----------
         self
@@ -303,7 +304,7 @@ class FEM():
             self.mu_ = np.copy(mu_new)
             self.Sigma_ = np.copy(Sigma_new)
             self.tau_ = np.copy(tau_new)
-
+            
             ite += 1
         
         self.labels_ = np.array([i for i in np.argmax(cond_prob, axis=1)])
