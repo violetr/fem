@@ -214,25 +214,25 @@ class FEM():
                     tau_ite_sr = np.where(tau_ite_sr<10**(-8) , 10**(-8),
                                           np.where(tau_ite_sr>10**(8), 10**(8), tau_ite_sr))
                     
-                if self.version==1:
+                if self.version == 1:
                     
                     diff = X - mu_fixed_point
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
                     
-                if self.version==2:
+                if self.version == 2:
                     
                     diff = X - mu_fixed_point_new
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
                     
-                if self.version==3:
+                if self.version == 3:
                     
                     diff = X - mu_fixed_point
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
                     Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
 
-                if self.version==4: 
+                if self.version == 4: 
                     
                     diff = X - mu_fixed_point_new
                     Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
@@ -265,7 +265,7 @@ class FEM():
         ----------
         X: array-like, shape (n, p)
             data 
-    
+            
         Returns
         ----------
         self
@@ -303,7 +303,6 @@ class FEM():
             self.mu_ = np.copy(mu_new)
             self.Sigma_ = np.copy(Sigma_new)
             self.tau_ = np.copy(tau_new)
-            print(ite)
 
             ite += 1
         
