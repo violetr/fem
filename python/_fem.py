@@ -10,8 +10,7 @@ from scipy.stats import multivariate_normal
 from sklearn.cluster import KMeans
 
 class FEM():
-    '''
-    Implements the F-EM algorithm 
+    '''Implements the F-EM algorithm     
     
     Parameters
     ----------
@@ -35,7 +34,7 @@ class FEM():
     Attributes
     ----------
     alpha_ : array-like, shape (n,)
-        The weights of each mixture components.
+        The weight of each mixture components.
     mu_ : array-like, shape (n, p)
         The mean of each mixture component.
     Sigma_ : array-like, shape (p, p)
@@ -67,6 +66,15 @@ class FEM():
         self.labels_ = None
     
     def _initialize(self, X):
+        '''Initialize all the parameters of the model:
+        theta = (alpha, mu, sigma, tau)
+        Either randomly or with kmeans centers.
+    
+        Parameters
+        ----------
+        X: array-like, shape (n, p)
+    
+        '''
         
         n, p = X.shape
 
@@ -95,17 +103,17 @@ class FEM():
             self.tau_ = np.ones((n, self.K))
     
     def _e_step(self, X):
-        '''
+        ''' E-step of the algorithm
         Computes the conditional probability of the model
         
-        INPUT:
-          X: (n, p) np.array 
-             data set, one observation by row 
-         theta_old: pd series
-             current parameters of model: alpha, mean, sigma, tau
-        
-        OUTPUT:
-        cond_prob_matrix: (n, K) np.array
+        Parameters
+        ----------
+        X: array-like, shape (n, p)
+            data
+    
+        Returns
+        ----------
+        cond_prob_matrix: array-like, shape (n, K)
              (cond_prob_matrix)_ik = P(Z_i=k|X_i=x_i)
         '''
         n, p = X.shape
@@ -132,18 +140,26 @@ class FEM():
         return cond_prob_matrix
     
     def _m_step(self, X, cond_prob):
-        '''
-        Computes the conditional probability of the model
+        ''' M-step of the algorithm
+        Updates all the parameters with the new conditional probabilities
         
-        INPUT:
-          X: (n, p) np.array 
-             data set, one observation by row 
-         theta_old: pd series
-             current parameters of model: alpha, mean, sigma, tau
-        
-        OUTPUT:
-        cond_prob_matrix: (n, K) np.array
+        Parameters
+        ----------
+        X: array-like, shape (n, p)
+            data 
+        cond_prob_matrix: array-like, shape (n, K)
              (cond_prob_matrix)_ik = P(Z_i=k|X_i=x_i)
+    
+        Returns
+        ----------
+        alpha_new: array-like, shape (n,)
+            The new weights of each mixture components.
+        mu_new: array-like, shape (n, p)
+            The new mean of each mixture component.
+        Sigma_new: array-like, shape (p, p)
+            The new covariance of each mixture component.
+        tau_new: array-like, shape (n, K)
+            The collection of tau values.
         '''
         
         n, p = X.shape
@@ -240,12 +256,21 @@ class FEM():
         return alpha_new, mu_new, Sigma_new, tau_new
     
     def fit(self, X):
+        ''' Fit the data to the model running the F-EM algorithm
+        
+        Parameters
+        ----------
+        X: array-like, shape (n, p)
+            data 
+    
+        Returns
+        ----------
+        self
+        '''
         
         n, p = X.shape
         
         self._initialize(X)
-        
-        # until here OK
 
         convergence = False
 
@@ -253,10 +278,10 @@ class FEM():
         
         while not(convergence) and  ite<self.max_iter:
 
-            # E-step:
+            # Compute conditional probabilities:
             cond_prob = self._e_step(X)
 
-            # M-step:
+            # Update estimators:
             alpha_new, mu_new, Sigma_new, tau_new = self._m_step(X, cond_prob)
 
             # Check convergence:
