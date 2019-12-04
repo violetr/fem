@@ -40,7 +40,6 @@ The notebooks
 
 - experiments-MNIST.ipynb
 - experiments-NORBand20newsgroup.ipynb
-- experiments-simulations.ipynb
 
 contain the experiments and comparisons described in the Section 3 of the paper. `plotnine`, `umap-learn` and `matplotlib` are required for the plots.
 
