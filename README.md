@@ -10,7 +10,9 @@ The clustering algorithm described in Section 2 is implemented as a class in `_f
 fem = FEM(K)
 fem.fit(dataset)
 ```
-where `K` is the number of clusters. To get the clustering labels you just need to access the labels attribute of the method object like this:
+where `K` is the number of clusters. 
+
+To get the clustering labels you just need to access the labels attribute of the method object like this:
 
 ```python
 fem.labels_
