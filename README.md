@@ -4,7 +4,7 @@ This repository contains the code that implements the F-EM clustering algorithm 
 
 ## Algorithm
 
-The clustering algorithm described in Section 2 is implemented as a class in `_fem.py`. It can be called in the following way
+The clustering algorithm described in Section 2 is implemented as a class in the file `_fem.py`. It can be called in the following way
 
 ```python
 fem = FEM(K)
@@ -42,7 +42,7 @@ The notebooks
 - experiments-NORBand20newsgroup.ipynb
 - experiments-simulations.ipynb
 
-contain the experiments and comparisons described in the Section 3 of the paper. `plotnine` and `matplotlib` are required for the plots.
+contain the experiments and comparisons described in the Section 3 of the paper. `plotnine`, `umap-learn` and `matplotlib` are required for the plots.
 
 We run the t-EM algorithm implemented by the function `EmSkew` from the R library `EMMMIXskew`. 
 
