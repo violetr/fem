@@ -184,19 +184,17 @@ class FEM():
             convergence_fp = False
             ite_fp = 1
             while not(convergence_fp) and ite_fp<self.max_iter_fp:
+                
                 inv_Sigma_fixed_point = np.linalg.inv(Sigma_fixed_point)
-                for i in range(n):
-                    sq_maha = ((X[i,:]-mu_fixed_point).T @ inv_Sigma_fixed_point @ (X[i,:]-mu_fixed_point))
-                    tau_ite[i] = sq_maha / p
-                    tau_ite_sr[i] = (sq_maha**(0.5))/p
-                    if tau_ite[i] <  10**(-8):
-                        tau_ite[i] =  10**(-8)
-                    if tau_ite[i] >  10**(8):
-                        tau_ite[i] =  10**(8)
-                    if tau_ite_sr[i] <  10**(-8):
-                        tau_ite_sr[i] =  10**(-8)
-                    if tau_ite_sr[i] >  10**(8):
-                        tau_ite_sr[i] =  10**(8)
+                diff = X - mu_fixed_point             
+                sq_maha = (np.dot(diff, inv_Sigma_fixed_point) * diff).sum(1) # multiple quadratic form
+                
+                tau_ite = sq_maha / p 
+                tau_ite_sr = (sq_maha**(0.5))/p
+                tau_ite = np.where(tau_ite<10**(-8) , 10**(-8),
+                                   np.where(tau_ite>10**(8), 10**(8), tau_ite))
+                tau_ite_sr = np.where(tau_ite_sr<10**(-8) , 10**(-8),
+                                      np.where(tau_ite_sr>10**(8), 10**(8), tau_ite_sr))
 
                 if self.version == 1 or self.version ==2:
                     Ck = (cond_prob[:, k]/tau_ite)/np.sum(cond_prob[:,k]/tau_ite)
@@ -204,41 +202,48 @@ class FEM():
                     Ck = (cond_prob[:, k]/tau_ite_sr)/np.sum(cond_prob[:,k]/tau_ite_sr)
 
                 mu_fixed_point_new = np.sum(np.multiply(X, Ck[:, np.newaxis]), 0)
-                Sigma_sum = np.zeros((p, p))
-                for i in range(n):
-
-                    if self.version == 2 or self.version == 4: # if usig new estim, update denominator
+                
+                if self.version == 2 or self.version == 4: # if usig new estim, update denominator
                         
-                        sq_maha = ((X[i,:]-mu_fixed_point_new).T @ inv_Sigma_fixed_point @ (X[i,:]-mu_fixed_point_new))
-                        tau_ite[i] = sq_maha / p
-                        tau_ite_sr[i] = (sq_maha**(0.5))/p
-                        if tau_ite[i] <  10**(-8):
-                            tau_ite[i] =  10**(-8)
-                        if tau_ite[i] >  10**(8):
-                            tau_ite[i] =  10**(8)
-                        if tau_ite_sr[i] <  10**(-8):
-                            tau_ite_sr[i] =  10**(-8)
-                        if tau_ite_sr[i] >  10**(8):
-                            tau_ite_sr[i] =  10**(8)
+                    diff = X - mu_fixed_point_new             
+                    sq_maha = (np.dot(diff, inv_Sigma_fixed_point) * diff).sum(1) # multiple quadratic form
+                    tau_ite = sq_maha / p 
+                    tau_ite_sr = (sq_maha**(0.5))/p
+                    tau_ite = np.where(tau_ite<10**(-8) , 10**(-8),
+                                       np.where(tau_ite>10**(8), 10**(8), tau_ite))
+                    tau_ite_sr = np.where(tau_ite_sr<10**(-8) , 10**(-8),
+                                          np.where(tau_ite_sr>10**(8), 10**(8), tau_ite_sr))
+                    
+                if self.version==1:
+                    
+                    diff = X - mu_fixed_point
+                    Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
+                    Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
+                    
+                if self.version==2:
+                    
+                    diff = X - mu_fixed_point_new
+                    Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite * diff.T, diff) / (n * alpha_new[k])
+                    Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
+                    
+                if self.version==3:
+                    
+                    diff = X - mu_fixed_point
+                    Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
+                    Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
 
-                    if self.version==1:
-                        Sigma_sum += (cond_prob[i, k] * (X[i, :]-mu_fixed_point)[:, np.newaxis]@(X[i, :]-mu_fixed_point)[np.newaxis,:])/tau_ite[i]
-                    if self.version==2:
-                        Sigma_sum += (cond_prob[i, k] * (X[i, :]-mu_fixed_point_new)[:, np.newaxis]@(X[i, :]-mu_fixed_point_new)[np.newaxis,:])/tau_ite[i]
-                    if self.version==3:
-                        Sigma_sum += (cond_prob[i, k] * (X[i, :]-mu_fixed_point)[:, np.newaxis]@(X[i, :]-mu_fixed_point)[np.newaxis,:])/tau_ite_sr[i]
-                    if self.version==4: 
-                        Sigma_sum += (cond_prob[i, k] * (X[i, :]-mu_fixed_point_new)[:, np.newaxis]@(X[i, :]-mu_fixed_point_new)[np.newaxis,:])/tau_ite_sr[i]
-
-                Sigma_sum /= (n * alpha_new[k])
-                Sigma_sum *= p / np.trace(Sigma_sum)
+                if self.version==4: 
+                    
+                    diff = X - mu_fixed_point_new
+                    Sigma_fixed_point_new = np.dot(cond_prob[:, k]/tau_ite_sr * diff.T, diff) / (n * alpha_new[k])
+                    Sigma_fixed_point_new *= p / np.trace(Sigma_fixed_point_new)
 
                 convergence_fp = True
-                convergence_fp = convergence_fp and (math.sqrt(np.inner(mu_fixed_point_new - mu_fixed_point_new, mu_fixed_point_new - mu_fixed_point_new)/p) < 10**(-5))
-                convergence_fp = convergence_fp and (np.linalg.norm(Sigma_sum-Sigma_fixed_point, ord='fro')/p) < 10**(-5)
+                convergence_fp = convergence_fp and (math.sqrt(np.inner(mu_fixed_point - mu_fixed_point_new, mu_fixed_point - mu_fixed_point_new)/p) < 10**(-5))
+                convergence_fp = convergence_fp and (np.linalg.norm(Sigma_fixed_point_new-Sigma_fixed_point, ord='fro')/p) < 10**(-5)
 
                 mu_fixed_point = mu_fixed_point_new.copy()
-                Sigma_fixed_point = Sigma_sum.copy() 
+                Sigma_fixed_point = Sigma_fixed_point_new.copy() 
 
                 ite_fp += 1
 
@@ -246,12 +251,10 @@ class FEM():
             Sigma_new[k] = Sigma_fixed_point 
 
             # UPDATE tau
-            for i in range(n):
-                tau_new[i][k] = ((X[i,:]-mu_new[k]).T @ np.linalg.inv(Sigma_new[k]) @ (X[i,:]-mu_new[k]))/p
-                if tau_new[i][k] <  10**(-6):
-                    tau_new[i][k] =  10**(-6)
-                if tau_new[i][k] >  10**(6):
-                    tau_new[i][k] =  10**(6)
+            diff = X - mu_new[k]
+            tau_new[:, k] = (np.dot(diff, np.linalg.inv(Sigma_new[k])) * diff).sum(1) / p
+            tau_new[:, k] = np.where(tau_new[:, k] < 10**(-6) , 10**(-6),
+                                     np.where(tau_new[:, k] > 10**(6), 10**(6), tau_new[:, k]))
 
         return alpha_new, mu_new, Sigma_new, tau_new
     
@@ -300,6 +303,7 @@ class FEM():
             self.mu_ = np.copy(mu_new)
             self.Sigma_ = np.copy(Sigma_new)
             self.tau_ = np.copy(tau_new)
+            print(ite)
 
             ite += 1
         
