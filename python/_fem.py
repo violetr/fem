@@ -128,8 +128,7 @@ class FEM():
             psd = _PSD(self.Sigma_[k])
             prec_U, logdet = psd.U, psd.log_pdet
             diff = X - self.mu_[k]
-            sq_maha = np.sum(np.square(np.dot(diff, prec_U)), axis=-1)/ self.tau_[:, k]
-            logdensity = -0.5 * (p * np.log(2 * np.pi) + p * np.log(self.tau_[:, k]) + logdet + sq_maha)            
+            logdensity = -0.5 * (p * np.log(2 * np.pi) + p * np.log(self.tau_[:, k]) + logdet + p)            
             cond_prob_matrix[:, k] = np.exp(logdensity)  * self.alpha_[k]            
         
         sum_row = np.sum(cond_prob_matrix, axis = 1) 
@@ -254,8 +253,8 @@ class FEM():
             # UPDATE tau
             diff = X - mu_new[k]
             tau_new[:, k] = (np.dot(diff, np.linalg.inv(Sigma_new[k])) * diff).sum(1) / p
-            tau_new[:, k] = np.where(tau_new[:, k] < 10**(-6) , 10**(-6),
-                                     np.where(tau_new[:, k] > 10**(6), 10**(6), tau_new[:, k]))
+            tau_new[:, k] = np.where(tau_new[:, k] < 10**(-12) , 10**(-12),
+                                     np.where(tau_new[:, k] > 10**(12), 10**(12), tau_new[:, k]))
 
         return alpha_new, mu_new, Sigma_new, tau_new
     
