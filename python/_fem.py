@@ -5,6 +5,7 @@ import pandas as pd
 # MATH and STATS:
 import math
 from scipy.stats import multivariate_normal
+from scipy.stats import chi2
 from scipy.stats._multivariate import _PSD  
 
 # for initialization of cluster's centers:
@@ -52,13 +53,14 @@ class FEM():
     
     def __init__(self, K, max_iter = 200, 
                  rand_initialization = False, 
-                 version = 1, max_iter_fp = 20):
+                 version = 1, max_iter_fp = 20, thres = None):
         self.K = K
         self.converged_ = False
         self.version = version
         self.rand_initialization = rand_initialization
         self.max_iter = max_iter
         self.max_iter_fp = max_iter_fp
+        self.thres = thres
         self.alpha_ = None
         self.mu_ = None
         self.Sigma_ = None
@@ -279,7 +281,7 @@ class FEM():
 
         ite = 0
         
-        while not(convergence) and  ite<self.max_iter:
+        while not(convergence) and  ite < self.max_iter:
 
             # Compute conditional probabilities:
             cond_prob = self._e_step(X)
@@ -310,4 +312,68 @@ class FEM():
         self.n_iter_ = ite
         self.converged_ = convergence
         
+        # Outlier rejection 
+        
+        outlierness = np.zeros((n, )).astype(bool)
+        
+        if self.thres is None :
+            self.thres = 0.05         
+        thres = chi2.ppf(1 - self.thres, p)
+            
+        for k in range(self.K):
+            
+            data_cluster = X[self.labels_ == k,:]
+            diff_cluster = data_cluster - self.mu_[k]
+            sig_cluster = np.mean(diff_cluster * diff_cluster) 
+            maha_cluster = (np.dot(diff_cluster, np.linalg.inv(self.Sigma_[k])) * diff_cluster).sum(1) / sig_cluster
+            outlierness[self.labels_ == k] = (maha_cluster >  thres)
+            
+        self.labels_[outlierness] = -1
+        
+        self.labels_ = self.labels_.astype(str)
+        
         return(self)
+    
+    def predict(self, Xnew, thres = None):
+        
+        n, p = Xnew.shape
+        
+        cond_prob_matrix = np.zeros((n, self.K))
+    
+        for k in range(self.K):
+            
+            psd = _PSD(self.Sigma_[k])
+            prec_U, logdet = psd.U, psd.log_pdet
+            diff = Xnew - self.mu_[k]
+            sig = np.mean(diff * diff) 
+            maha = (np.dot(diff, np.linalg.inv(self.Sigma_[k])) * diff).sum(1) / sig
+            logdensity = -0.5 * (logdet + maha)            
+            cond_prob_matrix[:, k] = np.exp(logdensity)  * self.alpha_[k]            
+        
+        sum_row = np.sum(cond_prob_matrix, axis = 1) 
+        bool_sum_zero = (sum_row == 0)
+        
+        cond_prob_matrix[bool_sum_zero, :] = self.alpha_      
+        cond_prob_matrix /= cond_prob_matrix.sum(axis=1)[:,np.newaxis]
+        
+        new_labels = np.array([i for i in np.argmax(cond_prob_matrix, axis=1)])
+        
+        outlierness = np.zeros((n, )).astype(bool)
+        
+        if thres is None :
+            thres = self.thres           
+        thres = chi2.ppf(1 - thres, p)
+            
+        for k in range(self.K):
+            
+            data_cluster = Xnew[new_labels == k,:]
+            diff_cluster = data_cluster - self.mu_[k]
+            sig_cluster = np.mean(diff_cluster * diff_cluster) 
+            maha_cluster = (np.dot(diff_cluster, np.linalg.inv(self.Sigma_[k])) * diff_cluster).sum(1) / sig_cluster
+            outlierness[new_labels == k] = (maha_cluster >  thres)
+            
+        new_labels[outlierness] = -1
+        
+        new_labels = new_labels.astype(str)
+        
+        return(new_labels)
