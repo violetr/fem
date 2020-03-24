@@ -8,7 +8,7 @@ The clustering algorithm described in Section 2 is implemented as a class in the
 
 ```python
 fem = FEM(K)
-fem.fit(dataset)
+fem.fit(data)
 ```
 where `K` is the number of clusters. 
 
@@ -16,6 +16,20 @@ To get the clustering labels you just need to access the labels attribute of the
 
 ```python
 fem.labels_
+```
+
+To change the outlier threshold to a fixed value b you can do the following:
+
+```python
+fem = FEM(K, thres = b)
+fem.fit(dataset)
+```
+
+To classify new data points after the model is fitted you can run the following lines:
+
+```python
+classif = fem.predict(new_data)
+classif.labels_
 ```
 
 External libraries required to run it:
