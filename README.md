@@ -25,7 +25,7 @@ fem = FEM(K, thres = b)
 fem.fit(dataset)
 ```
 
-To classify new data points after the model is fitted you can run the following lines:
+To classify new data points after the model is fitted you can run the following line:
 
 ```python
 classif_labels = fem.predict(new_data)
