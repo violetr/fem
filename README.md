@@ -17,7 +17,7 @@ To get the clustering labels you just need to access the labels attribute of the
 ```python
 fem.labels_
 ```
-Rejected outliers are labelled with the string '-1'.
+rejected outliers are labelled with the string '-1'.
 
 You can specify a value b between 0 (reject nothing) and 1 (reject everything) for the outlier rejection:
 
@@ -32,7 +32,14 @@ To classify new data points after the model is fitted you can run the following 
 classif_labels = fem.predict(new_data)
 ```
 
-External libraries required to run it:
+In case you are interested in the parameters of the model you can access them like this:
+
+```python
+fem.mu_
+fem.Sigma_
+```
+
+External libraries required to run the algorithm:
 
 - `numpy`
 - `scipy`
