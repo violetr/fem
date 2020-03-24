@@ -18,7 +18,7 @@ To get the clustering labels you just need to access the labels attribute of the
 fem.labels_
 ```
 
-To change the outlier threshold to a fixed value b you can do the following:
+You can specify a fixed value b for the outlier threshold:
 
 ```python
 fem = FEM(K, thres = b)
