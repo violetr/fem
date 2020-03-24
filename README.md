@@ -1,4 +1,4 @@
-# A flexible EM-like Clustering Algorithm for High-Dimensional Noisy Data
+# A flexible EM-like Clustering Algorithm for Noisy Data
 
 This repository contains the code that implements the F-EM clustering algorithm corresponding to https://arxiv.org/pdf/1907.01660.pdf. This algorithm follows a two-step EM scheme focused on robustness to noise.
 
