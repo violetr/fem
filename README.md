@@ -10,7 +10,7 @@ The clustering algorithm described in Section 2 is implemented as a class in the
 fem = FEM(K)
 fem.fit(data)
 ```
-where `K` is the number of clusters. 
+where `K` is the number of clusters and `data` is a numpy array with one observation per row. 
 
 To get the clustering labels you just need to access the labels attribute of the method object like this:
 
