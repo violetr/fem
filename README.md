@@ -18,7 +18,7 @@ To get the clustering labels you just need to access the labels attribute of the
 fem.labels_
 ```
 
-You can specify a fixed value b for the outlier threshold:
+You can specify a number between 0 (reject everything) and 1 (reject nothing) for the outlier rejection:
 
 ```python
 fem = FEM(K, thres = b)
@@ -28,8 +28,7 @@ fem.fit(dataset)
 To classify new data points after the model is fitted you can run the following lines:
 
 ```python
-classif = fem.predict(new_data)
-classif.labels_
+classif_labels = fem.predict(new_data)
 ```
 
 External libraries required to run it:
