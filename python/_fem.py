@@ -346,7 +346,7 @@ class FEM():
             prec_U, logdet = psd.U, psd.log_pdet
             diff = Xnew - self.mu_[k]
             sig = np.mean(diff * diff) 
-            maha = (np.dot(diff, np.linalg.inv(self.Sigma_[k])) * diff).sum(1) / sig
+            maha = (np.dot(diff, np.linalg.inv(self.Sigma_[k])) * diff).sum(1) 
             logdensity = -0.5 * (logdet + maha)            
             cond_prob_matrix[:, k] = np.exp(logdensity)  * self.alpha_[k]            
         
