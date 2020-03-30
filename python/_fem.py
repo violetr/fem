@@ -91,19 +91,65 @@ class FEM():
                 Sigma[k] = np.eye(p)
 
         else:
-            kmeans = KMeans(n_clusters=self.K, max_iter=200).fit(X)
+            
+            one_point_clusters = False
+            
+            kmeans = KMeans(n_clusters = self.K, max_iter = 200).fit(X)
+            
+            for k in range(self.K):
+                
+                nk = np.count_nonzero(kmeans.labels_ == k)
+                
+                if nk <= 2 and n>10:
+                    one_point_clusters = True
+                    
+            ite_filter = 0
+            n_filter = n
+        
+            if one_point_clusters:
+                
+                tree = cKDTree(X)#tree of nearest neighbors
+                KNN=4
+                dd, index = tree.query(X, k=[KNN]) # query for all points in data the Kth NN, returns distances and indexes
+                
+                dd = np.reshape(dd, (n,))
+                
+                alpha_quantile = 0.95
+            
+                while one_point_clusters and alpha_quantile > 0.5:
+                    
+                    ite_filter += 1
+                    
+                    alpha_quantile -= (0.1) * (ite_filter - 1)
+                    
+                    one_point_clusters = False
+                    
+                    X_without_extremes = X[dd < np.quantile(dd, alpha_quantile) , :]
+                    
+                    n_filter = X_without_extremes.shape[0]
+
+                    kmeans = KMeans(n_clusters=self.K, max_iter=200).fit(X_without_extremes)
+                    
+                    for k in range(self.K):
+                
+                        nk = np.count_nonzero(kmeans.labels_ == k)
+                
+                        if nk <= 2:
+                        
+                            one_point_clusters = True
+            
             self.alpha_ = np.zeros((self.K,))
             self.mu_ = np.zeros((self.K, p))
-            self.Sigma_ = np.zeros((self.K, p, p))
+            self.Sigma_ = np.zeros((self.K, p, p))            
 
             for k in range(self.K):
                 nk = np.count_nonzero(kmeans.labels_ == k)
-                self.alpha_[k] = float(nk)/float(n)
+                self.alpha_[k] = float(nk)/float(n_filter)
                 self.mu_[k] = kmeans.cluster_centers_[k]
-                X_k = X[kmeans.labels_ == k, :]
                 self.Sigma_[k] = np.eye(p) # cov result in nan sometimes
 
-            self.tau_ = np.ones((n, self.K))
+            self.tau_ = np.ones((n, self.K))                   
+
     
     def _e_step(self, X):
         ''' E-step of the algorithm
