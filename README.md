@@ -17,7 +17,7 @@ To get the clustering labels you just need to access the labels attribute of the
 ```python
 fem.labels_
 ```
-rejected outliers are labelled with the string '-1'.
+rejected outliers are labelled with '-1'.
 
 You can specify a value b between 0 (reject nothing) and 1 (reject everything) for the outlier rejection:
 
