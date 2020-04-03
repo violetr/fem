@@ -19,7 +19,7 @@ fem.labels_
 ```
 rejected outliers are labelled with '-1'.
 
-You can specify a value b between 0 (reject nothing) and 1 (reject everything) for the outlier rejection:
+You can specify a value `b` between 0 (reject nothing) and 1 (reject everything) for the outlier rejection:
 
 ```python
 fem = FEM(K, thres = b)
