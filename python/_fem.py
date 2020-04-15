@@ -10,6 +10,7 @@ from scipy.stats._multivariate import _PSD
 
 # for initialization of cluster's centers:
 from sklearn.cluster import KMeans
+from scipy.spatial import cKDTree
 
 class FEM():
     '''Implements the F-EM algorithm     
