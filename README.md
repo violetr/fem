@@ -74,6 +74,6 @@ Authors
 - Matthieu Jonckheere
 - Frédéric Pascal
 
-Copyright (c) 2019 CentraleSupelec and UBA.
+Copyright (c) 2019 CentraleSupelec.
 
 The python wrapper used to read smallNORB data is available [here](https://github.com/ndrplz/small_norb) (Copyright (c) 2017 Andrea Palazzi).
